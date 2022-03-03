@@ -138,6 +138,7 @@ metadata:
 spec:
   ports:
     - port: 90
+      targetPort: 80
       nodePort: 30010
   selector:
     app: wordpress
