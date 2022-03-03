@@ -137,7 +137,7 @@ metadata:
     app: wordpress
 spec:
   ports:
-    - port: 80
+    - port: 90
       nodePort: 30010
   selector:
     app: wordpress
@@ -171,4 +171,4 @@ spec:
           service:
             name: wordpress
             port:
-              number: 80
+              number: 90
