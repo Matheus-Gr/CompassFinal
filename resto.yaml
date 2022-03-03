@@ -43,6 +43,48 @@ spec:
         persistentVolumeClaim:
           claimName: mysql-pv-claim
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: projetocompass
+  name: wordpress
+  labels:
+    app: wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+    spec:
+      containers:
+      - image: wordpress:4.8-apache
+        name: wordpress
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: wordpress-mysql
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        ports:
+        - containerPort: 80
+          name: wordpress
+        volumeMounts:
+        - name: wordpress-persistent-storage-lab
+          mountPath: /var/www/html
+      volumes:
+      - name: wordpress-persistent-storage-lab
+        persistentVolumeClaim:
+          claimName: wp-pv-claim
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -109,4 +151,24 @@ metadata:
   name: mysql-pass
 data: 
   password: c2VuaGE=
-  #
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wordpress-ingress
+  namespace: projetocompass
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    # kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: projetofinal.compass.uol
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wordpress
+            port:
+              number: 80
