@@ -171,4 +171,4 @@ spec:
           service:
             name: wordpress
             port:
-              number: 30010
+              number: 80
