@@ -174,3 +174,4 @@ spec:
             name: wordpress
             port:
               number: 90
+              nodePort: 30010
